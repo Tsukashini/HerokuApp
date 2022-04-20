@@ -1,40 +1,44 @@
 package tests;
 
-import org.openqa.selenium.By;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import staticdata.WebUrls;
+import pompages.AlertsPage;
 
-public class AlertsTest extends BaseTest{
+public class AlertsTest extends BaseTest {
+    AlertsPage alertsPage;
+
+    @BeforeMethod
+    public void before() {
+
+        alertsPage = new AlertsPage(driver);
+        alertsPage.openAlertPage();
+    }
+
     @Test
     public void jsAlertClickTest() {
+        alertsPage.clickJsAlertButton();
+        alertsPage.switchToAccept();
 
-        driver.get(WebUrls.ALERT_URL);
-        driver.findElement(By.xpath("//button[text()='Click for JS Alert']")).click();
-        driver.switchTo().alert().accept();
-
-        Assert.assertEquals(driver.findElement(By.id("result")).getText(), "You successfully clicked an alert", "Alert not accepted");
+        Assert.assertEquals(alertsPage.getTextResult(), "You successfully clicked an alert", "Alert not accepted");
     }
+
     @Test
     public void jsConfirmClickTest() {
 
-        driver.get(WebUrls.ALERT_URL);
-        driver.findElement(By.xpath("//button[text()='Click for JS Confirm']")).click();
-        driver.switchTo().alert().dismiss();
-
-        Assert.assertEquals(driver.findElement(By.id("result")).getText(), "You clicked: Cancel", "Alert not dismiss");
+        alertsPage.clickJsConfirmButton();
+        alertsPage.switchToDismiss();
+        Assert.assertEquals(alertsPage.getTextResult(), "You clicked: Cancel", "Alert not dismiss");
     }
 
     @Test
     public void jsPromptClickTest() {
-
-        driver.get(WebUrls.ALERT_URL);
-        driver.findElement(By.xpath("//button[text()='Click for JS Prompt']")).click();
+        alertsPage.clickJsPromptButton();
         String message = "prompt text test";
-        driver.switchTo().alert().sendKeys(message);
-        driver.switchTo().alert().accept();
+        alertsPage.inputPromptMessage(message);
+        alertsPage.switchToAccept();
 
 
-        Assert.assertEquals(driver.findElement(By.id("result")).getText(), "You entered: " + message, "Text not equals");
+        Assert.assertEquals(alertsPage.getTextResult(), "You entered: " + message, "Text not equals");
     }
 }
